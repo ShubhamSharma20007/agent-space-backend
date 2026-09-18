@@ -44,16 +44,13 @@ export const createOrder =async(req,res,next)=>{
 }
 
 
-export const verifyPayment = async (req, res,next) => {
+export const verifyPayment = async (req, res, next) => {
     try {
         const { razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
-        const session = req.cookies?.session
+        const userId = req.headers['x-user-id'];
 
         const isValidPayment = validatePaymentVerification(
-            {
-                order_id: razorpay_order_id,
-                payment_id: razorpay_payment_id
-            },
+            { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
             razorpay_signature,
             process.env.RAZORPAY_KEY_SECRET
         );
@@ -62,30 +59,36 @@ export const verifyPayment = async (req, res,next) => {
             return res.status(400).send(new ApiResponse(400, 'Payment verification failed'));
         }
 
+        // atomically claim the order: only the caller who owns it, and only once
         const payment = await Payment.findOneAndUpdate(
-            { orderId: razorpay_order_id },
+            { orderId: razorpay_order_id, userId, status: 'created' },
             { status: 'paid', paymentId: razorpay_payment_id },
             { new: true }
         );
 
         if (!payment) {
-            return res.status(404).send(new ApiResponse(404, 'Order not found'));
+            return res.status(409).send(new ApiResponse(409, 'Order not found or already processed'));
         }
 
         try {
-          await axios.post(process.env.AUTH_SERVICE_URL + '/update-plan', {
-                userId: payment.userId,
-                planId: payment.planId,
-                credits: payment.credits,
-                session
-            });
+            await axios.post(
+                process.env.AUTH_SERVICE_URL + '/update-plan',
+                {
+                    userId: payment.userId,
+                    planId: payment.planId,
+                    credits: payment.credits,
+                },
+                { headers: { 'x-internal-key': process.env.INTERNAL_API_KEY } }
+            );
         } catch (syncErr) {
             console.error('Failed to sync plan to auth service:', syncErr.message);
+            // release the claim so the user can retry instead of paying for nothing
+            await Payment.updateOne({ _id: payment._id }, { status: 'created' });
+            return res.status(502).send(new ApiResponse(502, 'Could not apply credits, please retry'));
         }
 
         return res.status(200).send(new ApiResponse(200, 'Payment verified successfully', payment));
-
     } catch (err) {
-       next(err)
+        next(err);
     }
 };

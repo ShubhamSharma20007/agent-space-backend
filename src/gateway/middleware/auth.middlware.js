@@ -11,6 +11,8 @@ const protectAuthRoute = async (req, res, next) => {
         if (!user) {
             return res.status(401).json(ApiResponse.error("Invalid session", 401));
         }
+
+        console.log('Authenticated user: ',user)
         
         req.user = JSON.parse(user);
         next()

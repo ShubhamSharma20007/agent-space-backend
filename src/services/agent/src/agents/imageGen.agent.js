@@ -44,7 +44,7 @@ export const imageGenAgent = async (agentState) => {
         }
 
     } catch (error) {
-        console.error('Failed to generate image:', error)
+        console.error('Failed to generate image:', error?.message ||error)
          if (error.code === 429 && error.data?.message) {
         return {
             ...state,
