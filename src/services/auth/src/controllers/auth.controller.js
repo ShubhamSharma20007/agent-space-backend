@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import ApiResponse from "../shared/apis/ApiResponse.js";
 import redisClient from "../shared/config/redis.config.js";
 import {COST} from '../utils/tokenCost.js'
+import { SESSION_COOKIE_NAME,COOKIE_OPTIONS } from "../../../../gateway/const/cookieOptions.js";
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
@@ -79,13 +80,14 @@ export const login = async (req, res, next) => {
         isFreeEnd:user.isFreeEnd
     }), 'PX', 1000 * 60 * 60 * 24 * 7); // 7 days PX take millisecond Ex take in second
 
-    res.cookie("session", sessionId, { 
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production"? 'none':"lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-    });
+    // res.cookie("session", sessionId, { 
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: process.env.NODE_ENV === "production"? 'none':"lax",
+    //   maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+    // });
 
+     res.cookie(SESSION_COOKIE_NAME, sessionId, COOKIE_OPTIONS);
     return res
       .status(200)
       .json(
@@ -112,7 +114,7 @@ export const signout = async (req, res, next) => {
     }
 
     await redisClient.del(`session:${sessionId}`);  
-    res.clearCookie("session");
+      res.clearCookie(SESSION_COOKIE_NAME);
 
     return res
       .status(200)
