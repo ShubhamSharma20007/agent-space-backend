@@ -5,7 +5,7 @@ import User from "../models/user.model.js";
 import ApiResponse from "../shared/apis/ApiResponse.js";
 import redisClient from "../shared/config/redis.config.js";
 import {COST} from '../utils/tokenCost.js'
-import { SESSION_COOKIE_NAME,COOKIE_OPTIONS } from "../../../../gateway/const/cookieOptions.js";
+import { SESSION_COOKIE_NAME,COOKIE_OPTIONS } from "../const/cookieOptions.js";
 
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
 
