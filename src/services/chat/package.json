@@ -4,19 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-     "dev:chat": "nodemon --exec \"node --env-file=.env.development index.js\"",
-   "dev:production": "nodemon --exec \"node --env-file=.env.production index.js\"",
-    "start":"node index.js"
+    "dev:chat": "nodemon --exec \"node --env-file=.env.development index.js\"",
+    "dev:production": "nodemon --exec \"node --env-file=.env.production index.js\"",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "ioredis": "^6.0.0",
     "mongoose": "^9.9.4",
-    "nodemon": "^3.1.14",
-    "ioredis": "^6.0.0"
+    "nodemon": "^3.1.14"
   }
 }
