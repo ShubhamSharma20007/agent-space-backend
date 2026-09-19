@@ -54,12 +54,6 @@ export const login = async (req, res, next) => {
 
     if (!user && email) {
       user = await User.findOne({ email });
-
-      if (user && user.firebaseUUID !== decodedToken.uid) {
-        return res
-          .status(409)
-          .json(ApiResponse.error("Email is already registered", 409));
-      }
     }
 
     if (!user) {
@@ -106,11 +100,6 @@ export const login = async (req, res, next) => {
         })
       );
   } catch (error) {
-    if (error?.code === 11000 && error?.keyPattern?.email) {
-      return res
-        .status(409)
-        .json(ApiResponse.error("Email is already registered", 409));
-    }
     next(error);
   }
 };
