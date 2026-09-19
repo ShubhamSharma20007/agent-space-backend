@@ -49,14 +49,23 @@ export const login = async (req, res, next) => {
         .json(ApiResponse.error("Invalid token", 401));
     }
 
-    let user = await User.findOne({
-      firebaseUUID: decodedToken.uid,
-    });
+    const email = decodedToken.email?.trim().toLowerCase();
+    let user = await User.findOne({ firebaseUUID: decodedToken.uid });
+
+    if (!user && email) {
+      user = await User.findOne({ email });
+
+      if (user && user.firebaseUUID !== decodedToken.uid) {
+        return res
+          .status(409)
+          .json(ApiResponse.error("Email is already registered", 409));
+      }
+    }
 
     if (!user) {
       user = new User({
         firebaseUUID: decodedToken.uid,
-        email: decodedToken.email,
+        email,
         name: decodedToken.name,
         picture: decodedToken.picture,
       });
@@ -97,6 +106,11 @@ export const login = async (req, res, next) => {
         })
       );
   } catch (error) {
+    if (error?.code === 11000 && error?.keyPattern?.email) {
+      return res
+        .status(409)
+        .json(ApiResponse.error("Email is already registered", 409));
+    }
     next(error);
   }
 };
