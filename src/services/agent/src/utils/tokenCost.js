@@ -6,7 +6,8 @@ export const COST = {
     coding: 10,
     pdf: 10,
     ppt: 10,
-    image: 10
+    image: 10,
+    urlScrapper: 5 
 }
 
 

@@ -55,7 +55,6 @@ export const getAgentModel = (modelName)=>{
             return geminiLLM
         case 'pdfRAG':
             return geminiLLM
-            
         default:
             return groqLLM
     }

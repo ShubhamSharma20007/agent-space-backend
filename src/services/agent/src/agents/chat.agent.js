@@ -60,6 +60,7 @@ export const chatAgent = async (state)=>{
         aiResponse: response.content
     }
    } catch (error) {
+    console.error('CHAT AGENT ERROR:', error?.response?.data || error?.message || error)
      if (error.code === 429 && error.data?.message) {
         return {
             ...state,

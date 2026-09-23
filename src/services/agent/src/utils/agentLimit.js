@@ -6,7 +6,8 @@ const LIMIT = {
     coding: 5,
     pdf: 5,
     ppt: 5,
-    image: 5
+    image: 5,
+    urlScrapper: 5
 }
 
 

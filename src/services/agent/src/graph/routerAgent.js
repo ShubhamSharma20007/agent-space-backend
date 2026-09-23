@@ -28,6 +28,16 @@ export const routerAgent = async(agentState) => {
         }
     }
 
+    // url scrapper
+     const urlMatch = agentState.prompt?.match(/https?:\/\/[^\s)]+/i)
+    if (urlMatch) {
+        return {
+            ...agentState,
+            agent: 'urlScrapper',
+            url: urlMatch[0],
+        }
+    }
+
 
     // this is case of running auto model
 

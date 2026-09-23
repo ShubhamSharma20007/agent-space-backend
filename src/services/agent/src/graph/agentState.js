@@ -10,5 +10,6 @@ export const agentState = Annotation.Root({
     images:Annotation(), // for search img llm
     artifacts:Annotation(), // for coding preview
     userId:Annotation(),
-    file:Annotation()
+    file:Annotation(),
+    url:Annotation()  
 })

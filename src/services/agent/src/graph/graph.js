@@ -10,6 +10,7 @@ import { pptAgent } from "../agents/ppt.agent.js";
 import { imageGenAgent } from "../agents/imageGen.agent.js";
 import { pdfRAG } from "../agents/pdfRAG.agent.js";
 import { imageAnalyzer } from "../agents/imageAnalyzer.js";
+import { urlScrapperAgent } from "../agents/urlScrapper.agent.js";
 
 const workflow = new StateGraph(agentState);
 
@@ -24,6 +25,7 @@ workflow
   .addNode("imgGen_node", imageGenAgent)
   .addNode('pdfRAG_node',pdfRAG)
   .addNode('imageAnalyzer_node',imageAnalyzer)
+   .addNode('urlScrapper_node', urlScrapperAgent)
 
 // Edges
 workflow.addEdge(START, "router_node");
@@ -55,6 +57,9 @@ workflow.addConditionalEdges(
       case "imageAnalyzer":
         return "imageAnalyzer_node"
 
+      case "urlScrapper":
+        return "urlScrapper_node";
+
       default:
         return "chat_node"; 
     }
@@ -67,7 +72,8 @@ workflow.addConditionalEdges(
     ppt_node: "ppt_node",
     imgGen_node: "imgGen_node",
     pdfRAG_node: "pdfRAG_node",
-    imageAnalyzer_node: "imageAnalyzer_node"
+    imageAnalyzer_node: "imageAnalyzer_node",
+    urlScrapper_node: "urlScrapper_node"
   }
 );
 
@@ -79,6 +85,7 @@ workflow.addEdge('ppt_node',END)
 workflow.addEdge('imgGen_node',END) 
 workflow.addEdge('pdfRAG_node',END)
 workflow.addEdge('imageAnalyzer_node',END)
+workflow.addEdge('urlScrapper_node', END) 
 
 
 
